@@ -17,23 +17,37 @@ struct User:JsonReadable {
     var job:Job
     var cars:[Car]
     
-    init(json: Any) throws {
+    init(json: Object) throws {
         name = try json ~> "name"
         age = try json ~> "age"
         email = try json ~> "email"
         isRegistered = try json ~> "is_registered"
-        job = try Job(json: try json ~> "job")
-        cars = try [Car](json: try json ~> "job")
-
+        job = try Job(json: json ~> "job")
+        cars = try [Car](json: json ~> "cars")
     }
 }
 
 struct Job:JsonReadable {
+    var position:String
+    var start:Date
     
+    init(json:Object) throws {
+        position = try json ~> "position"
+        start = try json ~> "start"
+    }
 }
 
 struct Car:JsonReadable {
     
+    var make:String
+    var model:String
+    var year:Int
+    
+    init(json:Object) throws {
+        make = try json ~> "make"
+        model = try json ~> "model"
+        year = try json ~> "year"
+    }
 }
 
 class JSONTests: XCTestCase {

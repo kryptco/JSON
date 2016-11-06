@@ -8,7 +8,12 @@
 
 import Foundation
 
-//MARK: Erros
+/**
+    JSON Parsing Error Types
+    - badFormat: The raw JSON data could not be cast from `Any` to the inferred type.
+    - badValue: The value `v` for an expected key `k` has type mismatch.
+    - missingKey: No value exists for the specified key.
+ */
 enum ParseError:Error, CustomStringConvertible {
     case badFormat
     case badValue(k:String, v:Any)
@@ -26,11 +31,38 @@ enum ParseError:Error, CustomStringConvertible {
     }
 }
 
-
-//MARK: Jsonable
-typealias Object = [String:Any]
+/** 
+    A common protocol for objects that serialize to JSON
+    - `JsonReadable`: An object that is initializable from JSON.
+    - `JsonWritable`: An object that is serializable to JSON
+ */
 protocol Jsonable:JsonReadable, JsonWritable {}
 
+
+/// JSON Dictionaries are referred to as `Object`
+typealias Object = [String:Any]
+
+/** 
+    Syntax sugar for reading values from JSON Dictionaries.
+ 
+    - Parameter object: The JSON Object.
+    - Parameter key: The key to read from `object`.
+
+    # Type Inference
+
+    The generic type <T> is inferred to ensure the value is of the correct type.
+ 
+    - Returns: The value for `key` in JSON Object `object` if it exists and is of type `T`
+
+    **Example**
+    ```
+        // var object:Object
+        let simple:String = try object ~> "key"
+        let complex:Complex = try Complex(json: object ~> "complex")
+    ```
+    - Throws: `ParseError.missingKey` or `ParseError.badValue`.
+
+ */
 func ~><T>(object: Object, key:String) throws -> T {
     guard let value = object[key] else {
         throw ParseError.missingKey(key)
@@ -43,63 +75,119 @@ func ~><T>(object: Object, key:String) throws -> T {
     return typedValue
 }
 
-//MARK: JsonReadable
+/** 
+    JsonReadable must implement `init(json:Object)`
+    Use the `~>` operator function for simplicity.
+*/
 protocol JsonReadable {
     init(json:Object) throws
 }
 
 extension JsonReadable {
+    
+    /**
+        Init a JsonReadable object from raw JSON data bytes
+        - Parameter jsonData: The JSON data.
+     */
     init(jsonData:Data) throws {
-        let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.allowFragments)
-        
-        guard let object = jsonObject as? Object else {
-            throw ParseError.badFormat
-        }
-        
+        let object:Object = try parseJson(data: jsonData)
         self = try Self(json: object)
     }
     
+    /**
+     Init a JsonReadable object from a JSON string.
+     - Parameter jsonString: The JSON string.
+     */
     init(jsonString:String) throws {
-        guard let jsonData = jsonString.data(using: String.Encoding.utf8) else {
-            throw ParseError.badFormat
-        }
-        
-        try self.init(jsonData: jsonData)
-    }
-    
-    static func List(_ list:[Object]) throws -> [Self] {
-        return try list.map({ try Self(json: $0) })
+        let object:Object = try parseJson(string: jsonString)
+        self = try Self(json: object)
     }
 }
 
-extension Array  where Element:JsonReadable {
+extension Array where Element:JsonReadable {
+    /**
+     Init an array of JsonReadables with a list of objects.
+     - Parameter json: The list of JSON objects.
+     */
+    init(json:[Object]) throws {
+        self = try json.map({ try Element(json: $0) })
+    }
+    
+    /**
+     Init an array of JsonReadables with JSON data bytes.
+     - Parameter jsonData: The JSON data.
+     */
     init(jsonData:Data) throws {
-        let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.allowFragments)
-        
-        guard let objectList = jsonObject as? [Object] else {
-            throw ParseError.badFormat
-        }
-        
-        self = try objectList.map({ try Element(json: $0) })
+        let objectList:[Object] = try parseJson(data: jsonData)
+        try self.init(json: objectList)
     }
     
+    /**
+     Init an array of JsonReadables with JSON string.
+     - Parameter jsonString: The JSON string.
+     */
     init(jsonString:String) throws {
-        guard let jsonData = jsonString.data(using: String.Encoding.utf8) else {
-            throw ParseError.badFormat
-        }
-        
-        try self.init(jsonData: jsonData)
+        let objectList:[Object] = try parseJson(string: jsonString)
+        try self.init(json: objectList)
     }
 }
 
-protocol JsonPrimitive:JsonReadable {
-    init(json:Object) throws
 
+/** 
+    Common protocol for JSON Primitives.
+    - `String`
+    - `Date`
+    - `Int`
+    - `Double`
+ 
+ */
+protocol JsonPrimitive {}
+extension String:JsonPrimitive {}
+extension Int:JsonPrimitive {}
+extension Double:JsonPrimitive {}
+extension Date:JsonPrimitive {}
+
+/// Array Extension for `JsonPrimitive`
+extension Array where Element:JsonPrimitive {
+    
+    /**
+     Init an array of JsonPrimitive with a list of Anys.
+     - Parameter json: The list of JSON objects.
+     */
+    init(json:[Any]) throws {
+        self = []
+        for val in json {
+            guard let typedVal = val as? Element else {
+                throw ParseError.badFormat
+            }
+            self.append(typedVal)
+        }
+    }
+    
+    /**
+     Init an array of JsonReadables with JSON data bytes.
+     - Parameter jsonData: The JSON data.
+     */
+    init(jsonData:Data) throws {
+        let anyList:[Any] = try parseJson(data: jsonData)
+        try self.init(json: anyList)
+    }
+    
+    /**
+     Init an array of JsonReadables with JSON string.
+     - Parameter jsonString: The JSON string.
+     */
+    init(jsonString:String) throws {
+        let anyList:[Any] = try parseJson(string: jsonString)
+        try self.init(json: anyList)
+    }
 }
 
 
-//MARK: JsonWritable
-
+/**
+ JsonWritable must implement propertiy `object:Object { get }`.
+ Map a `JsonWritable` to a JSON Object.
+*/
 protocol JsonWritable {
     var object:Object { get }
 }
@@ -107,10 +195,18 @@ protocol JsonWritable {
 
 extension JsonWritable {
     
+    /**
+        Transform a `JsonWriteable` to JSON data bytes.
+        - Returns: JSON as Data bytes.
+     */
     func jsonData() throws -> Data {
         return try JSONSerialization.data(withJSONObject: object)
     }
     
+    /**
+     Transform a `JsonWriteable` to a JSON string.
+     - Returns: JSON as Data bytes.
+     */
     func jsonString() throws -> String {
         let jsonData = try self.jsonData()
         
@@ -123,5 +219,32 @@ extension JsonWritable {
     }
 }
 
+/**
+    Use std lib to parse JSON data and attempt cast to inferred type `T`.
+    - Parameter data: The raw JSON data.
+    - Returns: parsed JSON as type `T`.
+    - Throws: `ParseError.badFormat` or `JSONSerialization` error
+ */
+func parseJson<T>(data:Data) throws -> T {
+    let jsonAny = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
+    
+    guard let jsonTyped = jsonAny as? T else {
+        throw ParseError.badFormat
+    }
+    
+    return jsonTyped
+}
 
-
+/**
+ Use std lib to parse a JSON string and attempt cast to inferred type `T`.
+ - Parameter data: The raw JSON string.
+ - Returns: parsed JSON as type `T`.
+ - Throws: `ParseError.badFormat` or `JSONSerialization` error
+ */
+func parseJson<T>(string:String) throws -> T {
+    guard let data = string.data(using: String.Encoding.utf8) else {
+        throw ParseError.badFormat
+    }
+    
+    return try parseJson(data: data)
+}
