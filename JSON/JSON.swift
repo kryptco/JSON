@@ -136,11 +136,9 @@ extension Array where Element:JsonReadable {
 /** 
     Common protocol for JSON Primitives.
     - `String`
-    - `Date`
     - `Int`
     - `Double`
     - `Bool`
- 
  */
 protocol JsonPrimitive {}
 extension String:JsonPrimitive {}
