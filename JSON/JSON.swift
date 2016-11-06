@@ -139,13 +139,14 @@ extension Array where Element:JsonReadable {
     - `Date`
     - `Int`
     - `Double`
+    - `Bool`
  
  */
 protocol JsonPrimitive {}
 extension String:JsonPrimitive {}
 extension Int:JsonPrimitive {}
 extension Double:JsonPrimitive {}
-extension Date:JsonPrimitive {}
+extension Bool:JsonPrimitive {}
 
 /// Array Extension for `JsonPrimitive`
 extension Array where Element:JsonPrimitive {
@@ -200,7 +201,7 @@ extension JsonWritable {
         - Returns: JSON as Data bytes.
      */
     func jsonData() throws -> Data {
-        return try JSONSerialization.data(withJSONObject: object)
+        return try JSONSerialization.data(withJSONObject: object, options: JSONSerialization.WritingOptions.prettyPrinted)
     }
     
     /**
@@ -216,6 +217,16 @@ extension JsonWritable {
         }
         
         return json
+    }
+}
+
+extension Array where Element:JsonWritable {
+    
+    /**
+     Map an array of `JsonWriteable` to an array of JSON objects.
+     */
+    var objects:[Object] {
+        return self.map({ $0.object })
     }
 }
 
