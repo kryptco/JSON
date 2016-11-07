@@ -90,7 +90,7 @@ extension JsonReadable {
         Init a JsonReadable object from raw JSON data bytes
         - Parameter jsonData: The JSON data.
      */
-    init(jsonData:Data) throws {
+    public init(jsonData:Data) throws {
         let object:Object = try parseJson(data: jsonData)
         self = try Self(json: object)
     }
@@ -99,7 +99,7 @@ extension JsonReadable {
      Init a JsonReadable object from a JSON string.
      - Parameter jsonString: The JSON string.
      */
-    init(jsonString:String) throws {
+    public init(jsonString:String) throws {
         let object:Object = try parseJson(string: jsonString)
         self = try Self(json: object)
     }
@@ -110,7 +110,7 @@ extension Array where Element:JsonReadable {
      Init an array of JsonReadables with a list of objects.
      - Parameter json: The list of JSON objects.
      */
-    init(json:[Object]) throws {
+    public init(json:[Object]) throws {
         self = try json.map({ try Element(json: $0) })
     }
     
@@ -118,7 +118,7 @@ extension Array where Element:JsonReadable {
      Init an array of JsonReadables with JSON data bytes.
      - Parameter jsonData: The JSON data.
      */
-    init(jsonData:Data) throws {
+    public init(jsonData:Data) throws {
         let objectList:[Object] = try parseJson(data: jsonData)
         try self.init(json: objectList)
     }
@@ -127,7 +127,7 @@ extension Array where Element:JsonReadable {
      Init an array of JsonReadables with JSON string.
      - Parameter jsonString: The JSON string.
      */
-    init(jsonString:String) throws {
+    public init(jsonString:String) throws {
         let objectList:[Object] = try parseJson(string: jsonString)
         try self.init(json: objectList)
     }
@@ -154,7 +154,7 @@ extension Array where Element:JsonPrimitive {
      Init an array of JsonPrimitive with a list of Anys.
      - Parameter json: The list of JSON objects.
      */
-    init(json:[Any]) throws {
+    public init(json:[Any]) throws {
         self = []
         for val in json {
             guard let typedVal = val as? Element else {
@@ -168,7 +168,7 @@ extension Array where Element:JsonPrimitive {
      Init an array of JsonReadables with JSON data bytes.
      - Parameter jsonData: The JSON data.
      */
-    init(jsonData:Data) throws {
+    public init(jsonData:Data) throws {
         let anyList:[Any] = try parseJson(data: jsonData)
         try self.init(json: anyList)
     }
@@ -177,7 +177,7 @@ extension Array where Element:JsonPrimitive {
      Init an array of JsonReadables with JSON string.
      - Parameter jsonString: The JSON string.
      */
-    init(jsonString:String) throws {
+    public init(jsonString:String) throws {
         let anyList:[Any] = try parseJson(string: jsonString)
         try self.init(json: anyList)
     }
@@ -199,7 +199,7 @@ extension JsonWritable {
         Transform a `JsonWriteable` to JSON data bytes.
         - Returns: JSON as Data bytes.
      */
-    func jsonData() throws -> Data {
+    public func jsonData() throws -> Data {
         return try JSONSerialization.data(withJSONObject: object, options: JSONSerialization.WritingOptions.prettyPrinted)
     }
     
@@ -207,7 +207,7 @@ extension JsonWritable {
      Transform a `JsonWriteable` to a JSON string.
      - Returns: JSON as Data bytes.
      */
-    func jsonString() throws -> String {
+    public func jsonString() throws -> String {
         let jsonData = try self.jsonData()
         
         guard let json = String(data: jsonData, encoding: String.Encoding.utf8)
@@ -224,7 +224,7 @@ extension Array where Element:JsonWritable {
     /**
      Map an array of `JsonWriteable` to an array of JSON objects.
      */
-    var objects:[Object] {
+    public var objects:[Object] {
         return self.map({ $0.object })
     }
 }
