@@ -60,4 +60,4 @@ struct Car:Jsonable {
 }
 ```
 
-> See examples more in `TestTypes.swift`
+> See more examples in `JSONTests/TestTypes.swift`
