@@ -14,12 +14,12 @@ import Foundation
     - badValue: The value `v` for an expected key `k` has type mismatch.
     - missingKey: No value exists for the specified key.
  */
-enum ParseError:Error, CustomStringConvertible {
+public enum ParseError:Error, CustomStringConvertible {
     case badFormat
     case badValue(k:String, v:Any)
     case missingKey(String)
 
-    var description:String {
+    public var description:String {
         switch self {
         case .badFormat:
             return "Invalid JSON"
@@ -36,13 +36,14 @@ enum ParseError:Error, CustomStringConvertible {
     - `JsonReadable`: An object that is initializable from JSON.
     - `JsonWritable`: An object that is serializable to JSON
  */
-protocol Jsonable:JsonReadable, JsonWritable {}
+public protocol Jsonable:JsonReadable, JsonWritable {}
 
 
 /// JSON Dictionaries are referred to as `Object`
-typealias Object = [String:Any]
+public typealias Object = [String:Any]
 
 /** 
+ 
     Syntax sugar for reading values from JSON Dictionaries.
  
     - Parameter object: The JSON Object.
@@ -63,7 +64,7 @@ typealias Object = [String:Any]
     - Throws: `ParseError.missingKey` or `ParseError.badValue`.
 
  */
-func ~><T>(object: Object, key:String) throws -> T {
+public func ~><T>(object: Object, key:String) throws -> T {
     guard let value = object[key] else {
         throw ParseError.missingKey(key)
     }
@@ -79,7 +80,7 @@ func ~><T>(object: Object, key:String) throws -> T {
     JsonReadable must implement `init(json:Object)`
     Use the `~>` operator function for simplicity.
 */
-protocol JsonReadable {
+public protocol JsonReadable {
     init(json:Object) throws
 }
 
@@ -140,7 +141,7 @@ extension Array where Element:JsonReadable {
     - `Double`
     - `Bool`
  */
-protocol JsonPrimitive {}
+public protocol JsonPrimitive {}
 extension String:JsonPrimitive {}
 extension Int:JsonPrimitive {}
 extension Double:JsonPrimitive {}
@@ -187,7 +188,7 @@ extension Array where Element:JsonPrimitive {
  JsonWritable must implement propertiy `object:Object { get }`.
  Map a `JsonWritable` to a JSON Object.
 */
-protocol JsonWritable {
+public protocol JsonWritable {
     var object:Object { get }
 }
 
@@ -234,7 +235,7 @@ extension Array where Element:JsonWritable {
     - Returns: parsed JSON as type `T`.
     - Throws: `ParseError.badFormat` or `JSONSerialization` error
  */
-func parseJson<T>(data:Data) throws -> T {
+public func parseJson<T>(data:Data) throws -> T {
     let jsonAny = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
     
     guard let jsonTyped = jsonAny as? T else {
@@ -250,7 +251,7 @@ func parseJson<T>(data:Data) throws -> T {
  - Returns: parsed JSON as type `T`.
  - Throws: `ParseError.badFormat` or `JSONSerialization` error
  */
-func parseJson<T>(string:String) throws -> T {
+public func parseJson<T>(string:String) throws -> T {
     guard let data = string.data(using: String.Encoding.utf8) else {
         throw ParseError.badFormat
     }
