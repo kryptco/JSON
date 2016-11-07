@@ -1,4 +1,5 @@
 <img src="https://github.com/KryptCo/JSON/raw/master/json-icon.png" width="125" height="50"/>
+
 A simple library for parsing and serializing JSON to any Swift data structures. Complete style control with minimal changes.
 
 > Developed at KryptCo (https://krypt.co)
