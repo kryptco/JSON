@@ -91,7 +91,7 @@ extension JsonReadable {
         - Parameter jsonData: The JSON data.
      */
     public init(jsonData:Data) throws {
-        let object:Object = try parseJson(data: jsonData)
+        let object:Object = try parse(data: jsonData)
         self = try Self(json: object)
     }
     
@@ -100,7 +100,7 @@ extension JsonReadable {
      - Parameter jsonString: The JSON string.
      */
     public init(jsonString:String) throws {
-        let object:Object = try parseJson(string: jsonString)
+        let object:Object = try parse(string: jsonString)
         self = try Self(json: object)
     }
 }
@@ -119,7 +119,7 @@ extension Array where Element:JsonReadable {
      - Parameter jsonData: The JSON data.
      */
     public init(jsonData:Data) throws {
-        let objectList:[Object] = try parseJson(data: jsonData)
+        let objectList:[Object] = try parse(data: jsonData)
         try self.init(json: objectList)
     }
     
@@ -128,7 +128,7 @@ extension Array where Element:JsonReadable {
      - Parameter jsonString: The JSON string.
      */
     public init(jsonString:String) throws {
-        let objectList:[Object] = try parseJson(string: jsonString)
+        let objectList:[Object] = try parse(string: jsonString)
         try self.init(json: objectList)
     }
 }
@@ -169,7 +169,7 @@ extension Array where Element:JsonPrimitive {
      - Parameter jsonData: The JSON data.
      */
     public init(jsonData:Data) throws {
-        let anyList:[Any] = try parseJson(data: jsonData)
+        let anyList:[Any] = try parse(data: jsonData)
         try self.init(json: anyList)
     }
     
@@ -178,7 +178,7 @@ extension Array where Element:JsonPrimitive {
      - Parameter jsonString: The JSON string.
      */
     public init(jsonString:String) throws {
-        let anyList:[Any] = try parseJson(string: jsonString)
+        let anyList:[Any] = try parse(string: jsonString)
         try self.init(json: anyList)
     }
 }
@@ -235,7 +235,7 @@ extension Array where Element:JsonWritable {
     - Returns: parsed JSON as type `T`.
     - Throws: `ParseError.badFormat` or `JSONSerialization` error
  */
-public func parseJson<T>(data:Data) throws -> T {
+public func parse<T>(data:Data) throws -> T {
     let jsonAny = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
     
     guard let jsonTyped = jsonAny as? T else {
@@ -251,10 +251,10 @@ public func parseJson<T>(data:Data) throws -> T {
  - Returns: parsed JSON as type `T`.
  - Throws: `ParseError.badFormat` or `JSONSerialization` error
  */
-public func parseJson<T>(string:String) throws -> T {
+public func parse<T>(string:String) throws -> T {
     guard let data = string.data(using: String.Encoding.utf8) else {
         throw ParseError.badFormat
     }
     
-    return try parseJson(data: data)
+    return try parse(data: data)
 }
