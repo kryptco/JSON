@@ -11,6 +11,7 @@
 		FA1D84061DCBCFDF00E786E1 /* JSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1D84051DCBCFDF00E786E1 /* JSONTests.swift */; };
 		FA1D84081DCBCFDF00E786E1 /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1D83FA1DCBCFDF00E786E1 /* JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA1D84121DCBD08900E786E1 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1D84111DCBD08900E786E1 /* JSON.swift */; };
+		FA4C9CC01DD019B70054A19F /* TestTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4C9CBF1DD019B70054A19F /* TestTypes.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		FA1D84051DCBCFDF00E786E1 /* JSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
 		FA1D84071DCBCFDF00E786E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA1D84111DCBD08900E786E1 /* JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
+		FA4C9CBF1DD019B70054A19F /* TestTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTypes.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				FA1D84051DCBCFDF00E786E1 /* JSONTests.swift */,
+				FA4C9CBF1DD019B70054A19F /* TestTypes.swift */,
 				FA1D84071DCBCFDF00E786E1 /* Info.plist */,
 			);
 			path = JSONTests;
@@ -211,6 +214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA1D84061DCBCFDF00E786E1 /* JSONTests.swift in Sources */,
+				FA4C9CC01DD019B70054A19F /* TestTypes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

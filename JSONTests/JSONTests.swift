@@ -9,107 +9,6 @@
 import XCTest
 @testable import JSON
 
-struct User:Jsonable, Equatable {
-    var name:String
-    var age:Int
-    var email:String
-    var isRegistered:Bool
-    var job:Job
-    var cars:[Car]
-    
-    init(name:String, age:Int, email:String, reg:Bool, job:Job, cars:[Car]) {
-        self.name = name
-        self.age = age
-        self.email = email
-        self.isRegistered = reg
-        self.job = job
-        self.cars = cars
-    }
-    
-    init(json: Object) throws {
-        name = try json ~> "name"
-        age = try json ~> "age"
-        email = try json ~> "email"
-        isRegistered = try json ~> "is_registered"
-        job = try Job(json: json ~> "job")
-        cars = try [Car](json: json ~> "cars")
-    }
-    
-    var object:Object {
-        return ["name": name,
-                "age": age,
-                "email": email,
-                "is_registered": isRegistered,
-                "job": job.object,
-                "cars": cars.objects]
-    }
-}
-
-func ==(l:User, r:User) -> Bool {
-    return  l.name == r.name &&
-            l.age == r.age &&
-            l.email == r.email &&
-            l.isRegistered == r.isRegistered &&
-            l.job.position == r.job.position &&
-            Int(l.job.start.timeIntervalSince1970) == Int(r.job.start.timeIntervalSince1970) &&
-            l.cars == r.cars
-    
-}
-
-struct Job:Jsonable {
-    var position:String
-    var start:Date
-    
-    init(pos:String, start:Date) {
-        self.position = pos
-        self.start = start
-    }
-    
-    init(json:Object) throws {
-        position = try json ~> "position"
-        start = try Date(timeIntervalSince1970: json ~> "start")
-    }
-    
-    var object:Object {
-        return ["position": position,
-                "start": start.timeIntervalSince1970
-                ]
-    }
-}
-
-struct Car:Jsonable, Equatable {
-    
-    var make:String
-    var model:String
-    var year:Int
-    
-    init(make:String, model:String, year:Int) {
-        self.make = make
-        self.model = model
-        self.year = year
-
-    }
-
-    
-    init(json:Object) throws {
-        make = try json ~> "make"
-        model = try json ~> "model"
-        year = try json ~> "year"
-    }
-    
-    var object:Object {
-        return ["make": make,
-                "model": model,
-                "year": year
-        ]
-    }
-}
-
-func ==(l:Car, r:Car) -> Bool {
-    return  l.make == r.make &&
-            l.model == r.model &&
-            l.year == r.year
-}
 
 class JSONTests: XCTestCase {
     
@@ -147,6 +46,7 @@ class JSONTests: XCTestCase {
             name: "Alex",
             age: 25,
             email: "alex@krypt.co",
+            ut: .member(id: "1234567890"),
             reg: true,
             job: Job(pos: "Founder", start: Date()),
             cars: [
