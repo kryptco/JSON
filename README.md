@@ -1,4 +1,4 @@
-![](https://github.com/KryptCo/JSON/raw/master/json-icon.png=250x101)
+![](https://github.com/KryptCo/JSON/raw/master/json-icon.png =250x101)
 
 
 # JSON.swift
