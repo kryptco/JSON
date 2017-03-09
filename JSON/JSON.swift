@@ -16,6 +16,7 @@ import Foundation
  */
 public enum ParseError:Error, CustomStringConvertible {
     case badFormat
+    case badObjectWritable
     case badValue(k:String, v:Any)
     case missingKey(String)
 
@@ -27,6 +28,8 @@ public enum ParseError:Error, CustomStringConvertible {
             return "Invalid object value: \(v) for key: \(k)"
         case .missingKey(let k):
             return "Missing dictionary key: \(k)"
+        case .badObjectWritable:
+            return "Invalid writable object"
         }
     }
 }
@@ -200,6 +203,11 @@ extension JsonWritable {
         - Returns: JSON as Data bytes.
      */
     public func jsonData() throws -> Data {
+        
+        guard JSONSerialization.isValidJSONObject(object) else {
+            throw ParseError.badObjectWritable
+        }
+        
         return try JSONSerialization.data(withJSONObject: object, options: JSONSerialization.WritingOptions.prettyPrinted)
     }
     

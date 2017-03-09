@@ -73,4 +73,30 @@ class JSONTests: XCTestCase {
         }
     }
     
+    func testImproperObject() {
+        
+        let user = User(
+            name: "Alex",
+            age: 25,
+            email: "alex@krypt.co",
+            ut: .member(id: "1234567890"),
+            reg: true,
+            job: Job(pos: "Founder", start: Date()),
+            cars: [
+                Car(make: "Toyota", model: "Rav4", year:2004),
+                Car(make: "BMW", model: "x3", year:2012)
+            ])
+        
+        let improper = Improper(user: user, job: user.job)
+        
+        do {
+            let _ = try improper.jsonData()
+            XCTFail("error should have been thrown")
+            
+        } catch {
+            XCTAssertNotNil(error)
+        }
+
+    }
+    
 }

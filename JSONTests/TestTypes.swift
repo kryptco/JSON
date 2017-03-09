@@ -148,3 +148,28 @@ func ==(l:Car, r:Car) -> Bool {
         l.model == r.model &&
         l.year == r.year
 }
+
+
+//MARK: Invalid implementation of jsonable
+struct Improper:Jsonable {
+    var user:User
+    var job:Job
+    
+    init(user:User, job:Job) {
+        self.user = user
+        self.job  = job
+    }
+    
+    
+    
+    init(json:Object) throws {
+        user = try json ~> "user"
+        job = try json ~> "job"
+    }
+    
+    var object:Object {
+        return ["user": user,
+                "job": job]
+    }
+}
+
