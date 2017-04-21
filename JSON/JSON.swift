@@ -202,7 +202,7 @@ extension JsonWritable {
         Transform a `JsonWriteable` to JSON data bytes.
         - Returns: JSON as Data bytes.
      */
-    public func jsonData(prettyPrinted:Bool = true) throws -> Data {
+    public func jsonData(prettyPrinted:Bool = false) throws -> Data {
         
         guard JSONSerialization.isValidJSONObject(object) else {
             throw ParseError.badObjectWritable
@@ -219,7 +219,7 @@ extension JsonWritable {
      Transform a `JsonWriteable` to a JSON string.
      - Returns: JSON as Data bytes.
      */
-    public func jsonString(prettyPrinted:Bool = true) throws -> String {
+    public func jsonString(prettyPrinted:Bool = false) throws -> String {
         let jsonData = try self.jsonData(prettyPrinted: prettyPrinted)
         
         guard let json = String(data: jsonData, encoding: String.Encoding.utf8)
