@@ -148,6 +148,8 @@ public protocol JsonPrimitive {}
 extension String:JsonPrimitive {}
 extension Int:JsonPrimitive {}
 extension Double:JsonPrimitive {}
+extension Int64:JsonPrimitive {}
+extension UInt64:JsonPrimitive {}
 extension Bool:JsonPrimitive {}
 
 /// Array Extension for `JsonPrimitive`
