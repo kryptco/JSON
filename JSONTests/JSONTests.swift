@@ -40,6 +40,20 @@ class JSONTests: XCTestCase {
         }
     }
     
+    func testNull() {
+        let jsonString = "{\"key\": null}"
+        
+        do {
+            let object:Object = try parse(string: jsonString)
+//            let x:String? = try object ~> "key"
+            
+            let x:String? = try? object ~> "key"
+            dump(x)
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+    
     func testWritableThenReadable() {
         
         let user = User(

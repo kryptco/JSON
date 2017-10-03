@@ -198,6 +198,19 @@ public protocol JsonWritable {
 }
 
 
+/**
+     An object itself is of course json writable
+ */
+public struct AbstractJsonWritable:JsonWritable {
+    public let object:Object
+}
+
+extension Dictionary where Key == String {
+    var jsonWritable:AbstractJsonWritable {
+        return AbstractJsonWritable(object: self)
+    }
+}
+
 extension JsonWritable {
     
     /**
