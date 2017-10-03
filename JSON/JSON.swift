@@ -206,7 +206,7 @@ public struct AbstractJsonWritable:JsonWritable {
 }
 
 extension Dictionary where Key == String {
-    var jsonWritable:AbstractJsonWritable {
+    public var jsonWritable:AbstractJsonWritable {
         return AbstractJsonWritable(object: self)
     }
 }
