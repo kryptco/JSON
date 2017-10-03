@@ -197,52 +197,17 @@ public protocol JsonWritable {
     var object:Object { get }
 }
 
-
-/**
-     An object itself is of course json writable
- */
-public struct AbstractJsonWritable:JsonWritable {
-    public let object:Object
-}
-
-extension Dictionary where Key == String {
-    public var jsonWritable:AbstractJsonWritable {
-        return AbstractJsonWritable(object: self)
-    }
-}
-
 extension JsonWritable {
     
     /**
-        Transform a `JsonWriteable` to JSON data bytes.
-        - Returns: JSON as Data bytes.
+         Convenience toJSON functions
      */
     public func jsonData(prettyPrinted:Bool = false) throws -> Data {
-        
-        guard JSONSerialization.isValidJSONObject(object) else {
-            throw ParseError.badObjectWritable
-        }
-        
-        if prettyPrinted {
-            return try JSONSerialization.data(withJSONObject: object, options: JSONSerialization.WritingOptions.prettyPrinted)
-        }
-        
-        return try JSONSerialization.data(withJSONObject: object)
+        return try JSON.jsonData(for: object, prettyPrinted: prettyPrinted)
     }
-    
-    /**
-     Transform a `JsonWriteable` to a JSON string.
-     - Returns: JSON as Data bytes.
-     */
+
     public func jsonString(prettyPrinted:Bool = false) throws -> String {
-        let jsonData = try self.jsonData(prettyPrinted: prettyPrinted)
-        
-        guard let json = String(data: jsonData, encoding: String.Encoding.utf8)
-        else {
-            throw ParseError.badFormat
-        }
-        
-        return json
+        return try JSON.jsonString(for: object, prettyPrinted: prettyPrinted)
     }
 }
 
@@ -254,6 +219,38 @@ extension Array where Element:JsonWritable {
     public var objects:[Object] {
         return self.map({ $0.object })
     }
+}
+
+/**
+ Transform a `JsonWriteable` to JSON data bytes.
+ - Returns: JSON as Data bytes.
+ */
+public func jsonData(for object:Object, prettyPrinted:Bool = false) throws -> Data {
+    
+    guard JSONSerialization.isValidJSONObject(object) else {
+        throw ParseError.badObjectWritable
+    }
+    
+    if prettyPrinted {
+        return try JSONSerialization.data(withJSONObject: object, options: JSONSerialization.WritingOptions.prettyPrinted)
+    }
+    
+    return try JSONSerialization.data(withJSONObject: object)
+}
+
+/**
+ Transform a `JsonWriteable` to a JSON string.
+ - Returns: JSON as Data bytes.
+ */
+public func jsonString(for object:Object, prettyPrinted:Bool = false) throws -> String {
+    let data = try jsonData(for: object, prettyPrinted: prettyPrinted)
+    
+    guard let json = String(data: data, encoding: String.Encoding.utf8)
+        else {
+            throw ParseError.badFormat
+    }
+    
+    return json
 }
 
 /**
