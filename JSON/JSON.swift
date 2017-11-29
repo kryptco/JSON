@@ -296,7 +296,7 @@ public struct JSONEnum {
     public let type:String
     let object:Object
     
-    init(json:Object) throws {
+    public init(json:Object) throws {
         guard   let (key, _) = json.first,
                 json.count == 1
         else {
