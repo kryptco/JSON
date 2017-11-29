@@ -292,7 +292,7 @@ public func parse<T>(string:String) throws -> T {
  
  - Throws: if there's more than one key-value in the json
  */
-struct JSONEnum {
+public struct JSONEnum {
     public let type:String
     let object:Object
     
