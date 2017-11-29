@@ -9,17 +9,24 @@
 import Foundation
 @testable import JSON
 
+struct UnknownEnumType:Error {}
+
 enum UserType:Jsonable, Equatable {
-    case member(id:String)
-    case guest(id:String)
+    case member(String)
+    case guest(String)
     
     init(json: Object) throws {
-        if let memberID:String = try? json ~> "member" {
-            self = .member(id: memberID)
-            return
-        }
         
-        self = try .guest(id: json ~> "guest")
+        let jsonEnum = try JSONEnum(json: json)
+        
+        switch jsonEnum.type {
+        case "member":
+            self = try .member(jsonEnum.value())
+        case "guest":
+            self = try .guest(jsonEnum.value())
+        default:
+            throw UnknownEnumType()
+        }
     }
     
     var object: Object {
@@ -172,4 +179,5 @@ struct Improper:Jsonable {
                 "job": job]
     }
 }
+
 

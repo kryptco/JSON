@@ -19,7 +19,8 @@ public enum ParseError:Error, CustomStringConvertible {
     case badObjectWritable
     case badValue(k:String, v:Any)
     case missingKey(String)
-
+    case invalidEnumObject
+    
     public var description:String {
         switch self {
         case .badFormat:
@@ -30,6 +31,8 @@ public enum ParseError:Error, CustomStringConvertible {
             return "Missing dictionary key: \(k)"
         case .badObjectWritable:
             return "Invalid writable object"
+        case .invalidEnumObject:
+            return "Invalid enum object"
         }
     }
 }
@@ -281,4 +284,30 @@ public func parse<T>(string:String) throws -> T {
     }
     
     return try parse(data: data)
+}
+
+/**
+ A JSON wrapper for an enum type:
+ { <enum_type>  : <enum_value> }
+ 
+ - Throws: if there's more than one key-value in the json
+ */
+struct JSONEnum {
+    public let type:String
+    let object:Object
+    
+    init(json:Object) throws {
+        guard   let (key, _) = json.first,
+                json.count == 1
+        else {
+            throw ParseError.invalidEnumObject
+        }
+
+        self.type = key
+        self.object = json
+    }
+    
+    public func value<T>() throws -> T {
+        return try object ~> type
+    }
 }

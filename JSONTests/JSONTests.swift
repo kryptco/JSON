@@ -60,7 +60,7 @@ class JSONTests: XCTestCase {
             name: "Alex",
             age: 25,
             email: "alex@krypt.co",
-            ut: .member(id: "1234567890"),
+            ut: .member("1234567890"),
             reg: true,
             job: Job(pos: "Founder", start: Date()),
             cars: [
@@ -93,7 +93,7 @@ class JSONTests: XCTestCase {
             name: "Alex",
             age: 25,
             email: "alex@krypt.co",
-            ut: .member(id: "1234567890"),
+            ut: .member("1234567890"),
             reg: true,
             job: Job(pos: "Founder", start: Date()),
             cars: [
